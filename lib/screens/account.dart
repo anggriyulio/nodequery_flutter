@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:getflutter/getflutter.dart';
+import 'package:nodequery_client/endpoints/github_endpoint.dart';
 import 'package:nodequery_client/endpoints/nodequery_endpoint.dart';
 import 'package:nodequery_client/models/account_model.dart';
+import 'package:nodequery_client/models/contributor_model.dart';
+import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Account extends StatefulWidget {
   @override
@@ -11,12 +16,13 @@ class Account extends StatefulWidget {
 
 class _AccountState extends State<Account> {
   bool _isLoading = true;
-  bool _isValid = false;
   bool _isValidating = false;
+  bool _isLoadContributors = true;
   String _apiKey;
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   AccountModel acc;
+  List<ContributorModel> contributors;
 
   void _validateKey(String token) async {
     setState(() => _isValidating = true);
@@ -30,7 +36,6 @@ class _AccountState extends State<Account> {
     if (res != null) {
       setState(() {
         _isLoading = false;
-        _isValid = true;
         acc = res;
       });
       final snackBar = SnackBar(
@@ -50,15 +55,43 @@ class _AccountState extends State<Account> {
 
   _getToken() async {
     var token = await NodeQueryEndpoint().getToken();
-    setState(() => {
-          _apiKey = token,
-          _isLoading = false,
-        });
+    setState(() {
+      _apiKey = token;
+      _isLoading = false;
+    });
+  }
+
+  _getContributors() async {
+    var res = await GithubEndpoint().contributors();
+    if (res != null) {
+      setState(() {
+        contributors = res;
+        _isLoadContributors = false;
+      });
+    }
+  }
+
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  showPackageInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    showAboutDialog(
+      context: context,
+      applicationVersion: 'v' + packageInfo.version,
+    );
   }
 
   @override
   void initState() {
     _getToken();
+    _getContributors();
     super.initState();
   }
 
@@ -75,31 +108,22 @@ class _AccountState extends State<Account> {
                 children: <Widget>[
                   Container(
                     padding: EdgeInsets.only(left: 35.0, right: 35.0, top: 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Settings',
-                              style: TextStyle(
-                                fontSize: 28.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
                         Text(
-                          'Hi with no excuses and travel with no regrets oscar wilde',
+                          'Application Settings',
                           style: TextStyle(
-                              fontSize: 16.0,
-                              height: 1.5,
-                              fontFamily: 'OpenSans'),
+                            fontSize: 28.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
+                        IconButton(
+                          icon: Icon(Icons.info),
+                          onPressed: () {
+                            showPackageInfo();
+                          },
+                        )
                       ],
                     ),
                   ),
@@ -131,7 +155,13 @@ class _AccountState extends State<Account> {
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text('Get an API key for your account'),
+                            child: GestureDetector(
+                              child: Text('Get an API key for your account'),
+                              onTap: () => {
+                                _launchURL(
+                                    'https://nodequery.com/help/developer-api'),
+                              },
+                            ),
                           ),
                           _isValidating
                               ? Center(child: CircularProgressIndicator())
@@ -158,7 +188,71 @@ class _AccountState extends State<Account> {
                       ),
                     ),
                   ),
-
+                  Container(
+                    margin: EdgeInsets.only(
+                        top: 10, bottom: 10, right: 20, left: 20),
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Project Repository',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        GestureDetector(
+                          onTap: () => {
+                            _launchURL(
+                                'https://github.com/anggriyulio/nodequery_flutter')
+                          },
+                          child: Image.asset(
+                            'assets/github_logo.png',
+                            width: 120,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 10, right: 20, left: 20),
+                    width: double.infinity,
+                    child: Text(
+                      'Github Contributors',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  _isLoadContributors
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : GridView.count(
+                          physics: BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          crossAxisCount: 4,
+                          children: contributors
+                              .map((c) => Container(
+                                    child: Column(
+                                      children: <Widget>[
+                                        GestureDetector(
+                                          onTap: () => {
+                                            _launchURL(c.htmlUrl),
+                                          },
+                                          child: GFAvatar(
+                                            size: GFSize.SMALL,
+                                            shape: GFAvatarShape.standard,
+                                            backgroundImage:
+                                                NetworkImage(c.avatarUrl),
+                                          ),
+                                        ),
+                                        Text(
+                                          c.login,
+                                          style: TextStyle(fontSize: 12),
+                                        )
+                                      ],
+                                    ),
+                                  ))
+                              .toList()),
                 ],
               ),
             ),

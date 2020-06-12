@@ -14,9 +14,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'NodeQuery Client',
       theme: ThemeData(
+        accentColor: Colors.black,
         textTheme: GoogleFonts.latoTextTheme(),
       ),
-      
       home: MyBottomNavigationBar(),
       debugShowCheckedModeBanner: false,
     );
@@ -39,7 +39,6 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
 
   final List<Widget> _children = [
     Home(),
-    Container(),
     Account(),
   ];
 
@@ -58,15 +57,12 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
     return Scaffold(
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
         currentIndex: _currentIndex,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Home'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.line_style),
-            title: Text('List Server'),
+            icon: Icon(Icons.cloud),
+            title: Text('Servers'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
@@ -74,12 +70,6 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
           )
         ],
         onTap: (int index) => _onNavigationTap(index),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your onPressed code here!
-        },
-        child: Icon(Icons.repeat),
       ),
     );
   }

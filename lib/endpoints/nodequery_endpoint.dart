@@ -4,10 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:nodequery_client/models/account_model.dart';
 import 'package:nodequery_client/models/server_list_model.dart';
-import 'package:nodequery_client/models/server_list_model.dart';
-import 'package:nodequery_client/models/server_list_model.dart';
 import 'package:nodequery_client/models/server_model.dart';
-import 'package:nodequery_client/screens/detail.dart';
 
 class NodeQueryEndpoint {
   final String baseUrl = 'https://nodequery.com/api/';
@@ -39,14 +36,12 @@ class NodeQueryEndpoint {
       var resString = jsonDecode(response.body);
       if (response.statusCode == 200) {
         for (Map i in resString['data'][0]) {
-          print(i);
           listServers.add(ServerListModel.fromJson(i));
         }
-
         return listServers;
       }
+      return null;
     } catch (e) {
-      print(e);
       return null;
     }
   }
@@ -54,7 +49,7 @@ class NodeQueryEndpoint {
 
 
   Future<ServerModel> server(String serverId) async {
-//    try {
+    try {
       var response =
       await client.get(baseUrl + 'servers/'+serverId+'?api_key=' + await getToken());
 
@@ -65,10 +60,10 @@ class NodeQueryEndpoint {
         server = ServerModel.fromJson(resString['data'][0]);
         return server;
       }
-//    } catch (e) {
-//      print(e);
-//      return null;
-//    }
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<String> getToken() async {

@@ -8,6 +8,12 @@ class ServerLoad extends StatefulWidget {
 class _ServerLoadState extends State<ServerLoad> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      child: Column(
+        children: <Widget>[
+
+        ],
+      ),
+    );
   }
 }

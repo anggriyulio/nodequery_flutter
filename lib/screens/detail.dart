@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:getflutter/getflutter.dart';
 import 'package:nodequery_client/endpoints/nodequery_endpoint.dart';
 import 'package:nodequery_client/helpers/widget.dart';
 import 'package:nodequery_client/models/account_model.dart';
@@ -11,7 +9,7 @@ import 'package:nodequery_client/screens/details/server_load.dart';
 import 'package:nodequery_client/screens/details/server_process.dart';
 
 class ServerDetail extends StatefulWidget {
-   ServerListModel srv;
+   final ServerListModel srv;
    ServerDetail({
      Key key,
      @required this.srv,
@@ -74,7 +72,14 @@ class _ServerDetailState extends State<ServerDetail> with TickerProviderStateMix
                     ),
                   ),
                   SizedBox(height: 10,),
-                  widget.srv.status == 'active' ? active(widget.srv.availability) : inactive(),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      widget.srv.status == 'active' ? active(widget.srv.availability) : inactive(),
+                      parseUpdateTime(widget.srv.updateTime),
+                    ],
+                  ),
 
                 ],
               ),

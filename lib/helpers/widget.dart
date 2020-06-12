@@ -32,7 +32,7 @@ Widget serverList(ServerListModel s) {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               s.status == 'active' ? active(s.availability) : inactive(),
-              _update_time(s.updateTime),
+              parseUpdateTime(s.updateTime),
             ],
           ),
         ),
@@ -181,9 +181,9 @@ Widget _chartData(ServerListModel s) {
   );
 }
 
-Widget _update_time(int updateTime) {
+Widget parseUpdateTime(int updateTime) {
   final lastUpdate =
-      new DateTime.now().subtract(Duration(milliseconds: updateTime));
+      new DateTime.fromMillisecondsSinceEpoch(updateTime * 1000);
 
   return Container(
     child: RichText(
