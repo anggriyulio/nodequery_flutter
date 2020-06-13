@@ -9,7 +9,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="nodequery_client"
+        android:label="NodeQuery Client"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
