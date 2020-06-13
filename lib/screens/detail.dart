@@ -155,7 +155,7 @@ class _ServerDetailState extends State<ServerDetail> with TickerProviderStateMix
     } else if (_selectedTab == 1) {
       return ServerProcess(prc: server.processesArray,);
     } else if (_selectedTab == 2) {
-      return ServerLoad();
+      return ServerLoad(server: server);
     }
     return Container();
   }
