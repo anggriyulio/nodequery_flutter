@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:getflutter/getflutter.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:nodequery_client/endpoints/github_endpoint.dart';
 import 'package:nodequery_client/endpoints/nodequery_endpoint.dart';
 import 'package:nodequery_client/models/account_model.dart';
@@ -42,13 +42,13 @@ class _AccountState extends State<Account> {
         backgroundColor: Colors.green,
         content: Text('Hurray! Your API Key is working.'),
       );
-      Scaffold.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
       final snackBar = SnackBar(
         backgroundColor: Colors.red,
         content: Text('API Key is not valid!'),
       );
-      Scaffold.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
     setState(() => _isValidating = false);
   }
@@ -103,157 +103,160 @@ class _AccountState extends State<Account> {
               child: Container(
               child: CircularProgressIndicator(),
             ))
-          : SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(left: 35.0, right: 35.0, top: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Application Settings',
-                          style: TextStyle(
-                            fontSize: 28.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.info),
-                          onPressed: () {
-                            showPackageInfo();
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    padding: EdgeInsets.all(5),
-                    child: FormBuilder(
-                      key: _formKey,
-                      initialValue: {
-                        'apiKey': _apiKey,
-                      },
-                      autovalidate: true,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          : SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(left: 35.0, right: 35.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Container(
-                            child: FormBuilderTextField(
-                              maxLines: 1,
-                              obscureText: true,
-                              attribute: "apiKey",
-                              decoration: InputDecoration(
-                                  labelText: "NodeQuery API Key"),
-                              validators: [
-                                FormBuilderValidators.required(),
-                              ],
+                          Text(
+                            'Application Settings',
+                            style: TextStyle(
+                              fontSize: 28.0,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: GestureDetector(
-                              child: Text('Get an API key for your account'),
-                              onTap: () => {
-                                _launchURL(
-                                    'https://nodequery.com/help/developer-api'),
-                              },
-                            ),
-                          ),
-                          _isValidating
-                              ? Center(child: CircularProgressIndicator())
-                              : GFButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState
-                                        .saveAndValidate()) {
-                                      _validateKey(_formKey
-                                          .currentState.value['apiKey']);
-                                    }
-                                  },
-                                  child: Text(
-                                    'Validate Key',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  fullWidthButton: true,
-                                  icon: Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                  ),
-                                  color: Colors.black,
-                                ),
+                          IconButton(
+                            icon: Icon(Icons.info),
+                            onPressed: () {
+                              showPackageInfo();
+                            },
+                          )
                         ],
                       ),
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 10, bottom: 10, right: 20, left: 20),
-                    width: double.infinity,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Project Repository',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        GestureDetector(
-                          onTap: () => {
-                            _launchURL(
-                                'https://github.com/anggriyulio/nodequery_flutter')
-                          },
-                          child: Image.asset(
-                            'assets/github_logo.png',
-                            width: 120,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 10, right: 20, left: 20),
-                    width: double.infinity,
-                    child: Text(
-                      'Github Contributors',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  _isLoadContributors
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : GridView.count(
-                          physics: BouncingScrollPhysics(),
-                          shrinkWrap: true,
-                          crossAxisCount: 4,
-                          children: contributors
-                              .map((c) => Container(
-                                    child: Column(
-                                      children: <Widget>[
-                                        GestureDetector(
-                                          onTap: () => {
-                                            _launchURL(c.htmlUrl),
-                                          },
-                                          child: GFAvatar(
-                                            size: GFSize.SMALL,
-                                            shape: GFAvatarShape.standard,
-                                            backgroundImage:
-                                                NetworkImage(c.avatarUrl),
-                                          ),
-                                        ),
-                                        Text(
-                                          c.login,
-                                          style: TextStyle(fontSize: 12),
-                                        )
-                                      ],
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(5),
+                      child: FormBuilder(
+                        key: _formKey,
+                        initialValue: {
+                          'apiKey': _apiKey,
+                        },
+                        autovalidateMode: AutovalidateMode.always,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Container(
+                              child: FormBuilderTextField(
+                                maxLines: 1,
+                                obscureText: true,
+                                attribute: "apiKey",
+                                decoration: InputDecoration(
+                                    labelText: "NodeQuery API Key"),
+                                validators: [
+                                  FormBuilderValidators.required(),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: GestureDetector(
+                                child: Text('Get an API key for your account'),
+                                onTap: () => {
+                                  _launchURL(
+                                      'https://nodequery.com/help/developer-api'),
+                                },
+                              ),
+                            ),
+                            _isValidating
+                                ? Center(child: CircularProgressIndicator())
+                                : GFButton(
+                                    onPressed: () {
+                                      if (_formKey.currentState
+                                          .saveAndValidate()) {
+                                        _validateKey(_formKey
+                                            .currentState.value['apiKey']);
+                                      }
+                                    },
+                                    child: Text(
+                                      'Validate Key',
+                                      style: TextStyle(color: Colors.white),
                                     ),
-                                  ))
-                              .toList()),
-                ],
+                                    fullWidthButton: true,
+                                    icon: Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                    ),
+                                    color: Colors.black,
+                                  ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(
+                          top: 10, bottom: 10, right: 20, left: 20),
+                      width: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'Project Repository',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          GestureDetector(
+                            onTap: () => {
+                              _launchURL(
+                                  'https://github.com/anggriyulio/nodequery_flutter')
+                            },
+                            child: Image.asset(
+                              'assets/github_logo.png',
+                              width: 120,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 10, right: 20, left: 20),
+                      width: double.infinity,
+                      child: Text(
+                        'Github Contributors',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    _isLoadContributors
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : GridView.count(
+                            physics: BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            crossAxisCount: 4,
+                            children: contributors
+                                .map((c) => Container(
+                                      child: Column(
+                                        children: <Widget>[
+                                          GestureDetector(
+                                            onTap: () => {
+                                              _launchURL(c.htmlUrl),
+                                            },
+                                            child: GFAvatar(
+                                              size: GFSize.SMALL,
+                                              shape: GFAvatarShape.standard,
+                                              backgroundImage:
+                                                  NetworkImage(c.avatarUrl),
+                                            ),
+                                          ),
+                                          Text(
+                                            c.login,
+                                            style: TextStyle(fontSize: 12),
+                                          )
+                                        ],
+                                      ),
+                                    ))
+                                .toList()),
+                  ],
+                ),
               ),
             ),
     );

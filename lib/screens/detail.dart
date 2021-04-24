@@ -9,21 +9,20 @@ import 'package:nodequery_client/screens/details/server_load.dart';
 import 'package:nodequery_client/screens/details/server_process.dart';
 
 class ServerDetail extends StatefulWidget {
-   final ServerListModel srv;
-   ServerDetail({
-     Key key,
-     @required this.srv,
-   }) : super(key: key);
+  final ServerListModel srv;
+  ServerDetail({
+    Key key,
+    @required this.srv,
+  }) : super(key: key);
 
   @override
   _ServerDetailState createState() => _ServerDetailState();
 }
 
-class _ServerDetailState extends State<ServerDetail> with TickerProviderStateMixin {
-
+class _ServerDetailState extends State<ServerDetail>
+    with TickerProviderStateMixin {
   bool _isLoading = true;
   int _selectedTab = 0;
-
 
   AccountModel acc;
   ServerModel server;
@@ -35,12 +34,10 @@ class _ServerDetailState extends State<ServerDetail> with TickerProviderStateMix
         server = res;
         _isLoading = false;
       });
-
-    } else{
+    } else {
       print('fail');
     }
   }
-
 
   @override
   void initState() {
@@ -50,100 +47,103 @@ class _ServerDetailState extends State<ServerDetail> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-
     TabController tabController =
-    new TabController(length: 3, vsync: this, initialIndex: _selectedTab);
+        new TabController(length: 3, vsync: this, initialIndex: _selectedTab);
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.only(left: 35.0, right: 35.0, top: 30, bottom: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    widget.srv.name,
-                    style: TextStyle(
-                      fontSize: 28.0,
-                      fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(left: 35.0, right: 35.0, bottom: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      widget.srv.name,
+                      style: TextStyle(
+                        fontSize: 28.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        widget.srv.status == 'active'
+                            ? active(widget.srv.availability)
+                            : inactive(),
+                        parseUpdateTime(widget.srv.updateTime),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              TabBar(
+                isScrollable: false,
+                controller: tabController,
+                unselectedLabelColor: Colors.black54,
+                indicatorColor: Colors.green,
+                labelColor: Colors.green,
+                indicator: CircleTabIndicator(
+                  color: Colors.green,
+                  radius: 4,
+                ),
+                tabs: [
+                  Tab(
+                    icon: Icon(
+                      Icons.apps,
+                      size: 28,
+                    ),
+                    child: Text(
+                      'Details',
+                      style: TextStyle(fontFamily: 'OpenSans', fontSize: 12),
                     ),
                   ),
-                  SizedBox(height: 10,),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      widget.srv.status == 'active' ? active(widget.srv.availability) : inactive(),
-                      parseUpdateTime(widget.srv.updateTime),
-                    ],
+                  Tab(
+                    icon: Icon(
+                      Icons.donut_large,
+                      size: 28,
+                    ),
+                    child: Text(
+                      'Process',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontFamily: 'OpenSans', fontSize: 12),
+                    ),
                   ),
-
+                  Tab(
+                    icon: Icon(
+                      Icons.trending_up,
+                      size: 28,
+                    ),
+                    child: Text(
+                      'Load',
+                      style: TextStyle(fontFamily: 'OpenSans', fontSize: 12),
+                    ),
+                  ),
                 ],
+                onTap: (int index) => {
+                  setState(() {
+                    _selectedTab = index;
+                  })
+                },
               ),
-            ),
-            TabBar(
-              isScrollable: false,
-              controller: tabController,
-              unselectedLabelColor: Colors.black54,
-              indicatorColor: Colors.green,
-              labelColor: Colors.green,
-                      indicator: CircleTabIndicator(
-                        color: Colors.green,
-                        radius: 4,
-                      ),
-              tabs: [
-                Tab(
-                  icon: Icon(
-                    Icons.apps,
-                    size: 28,
-                  ),
-                  child: Text(
-                    'Details',
-                    style:
-                    TextStyle(fontFamily: 'OpenSans', fontSize: 12),
-                  ),
-                ),
-                Tab(
-                  icon: Icon(
-                    Icons.donut_large,
-                    size: 28,
-                  ),
-                  child: Text(
-                    'Process',
-                    textAlign: TextAlign.center,
-                    style:
-                    TextStyle(fontFamily: 'OpenSans', fontSize: 12),
-                  ),
-                ),
-                Tab(
-                  icon: Icon(
-                    Icons.trending_up,
-                    size: 28,
-                  ),
-                  child: Text(
-                    'Load',
-                    style:
-                    TextStyle(fontFamily: 'OpenSans', fontSize: 12),
-                  ),
-                ),
-              ],
-              onTap: (int index) => {
-                setState(() {
-                  _selectedTab = index;
-                })
-              },
-            ),
-            Container(
-              margin: EdgeInsets.all(10),
-              padding: EdgeInsets.all(5),
-              child: _isLoading ? Center(child: CircularProgressIndicator(),) : _buildChild(),
-
-            ),
-
-          ],
+              Container(
+                margin: EdgeInsets.all(10),
+                padding: EdgeInsets.all(5),
+                child: _isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : _buildChild(),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -153,14 +153,15 @@ class _ServerDetailState extends State<ServerDetail> with TickerProviderStateMix
     if (_selectedTab == 0) {
       return ServerInfo(server: server);
     } else if (_selectedTab == 1) {
-      return ServerProcess(prc: server.processesArray,);
+      return ServerProcess(
+        prc: server.processesArray,
+      );
     } else if (_selectedTab == 2) {
       return ServerLoad(server: server);
     }
     return Container();
   }
 }
-
 
 class CircleTabIndicator extends Decoration {
   final BoxPainter _painter;
@@ -178,8 +179,8 @@ class _CirclePainter extends BoxPainter {
 
   _CirclePainter(Color color, this.radius)
       : _paint = Paint()
-    ..color = color
-    ..isAntiAlias = true;
+          ..color = color
+          ..isAntiAlias = true;
 
   @override
   void paint(Canvas canvas, Offset offset, ImageConfiguration cfg) {

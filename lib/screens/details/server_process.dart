@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:getflutter/getflutter.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:nodequery_client/helpers/widget.dart';
 import 'package:nodequery_client/models/server_model.dart';
 
@@ -66,7 +66,7 @@ class _ServerProcessState extends State<ServerProcess> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(bottom:4.0),
+                padding: const EdgeInsets.only(bottom: 4.0),
                 child: Text(
                   p.command,
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
@@ -110,7 +110,7 @@ class _ServerProcessState extends State<ServerProcess> {
                       padding: EdgeInsets.only(left: 10, right: 3),
                     )),
                     TextSpan(
-                      text: 'CPU ' + p.cpu.round().toString()+'%',
+                      text: 'CPU ' + p.cpu.round().toString() + '%',
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,

@@ -62,11 +62,11 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.cloud),
-            title: Text('Servers'),
+            label: 'Servers',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            title: Text('Settings'),
+            label: 'Settings',
           )
         ],
         onTap: (int index) => _onNavigationTap(index),

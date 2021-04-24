@@ -18,7 +18,6 @@ class NodeQueryEndpoint {
       if (response.statusCode == 200) {
         var resString = jsonDecode(response.body);
         AccountModel acc = AccountModel.fromJson(resString['data']);
-        print(response);
         return acc;
       }
 
